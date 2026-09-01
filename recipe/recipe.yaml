@@ -1,0 +1,73 @@
+schema_version: 1
+
+context:
+  version: "3.10.5"
+
+package:
+  name: xorjson
+  version: ${{ version }}
+
+source:
+  url: https://pypi.io/packages/source/x/xorjson/xorjson-${{ version }}.tar.gz
+  sha256: f23d792ee3092d60bb9f772eacf14df5484cfb25cd8874693bde83987254c193
+
+build:
+  number: 2
+  skip: match(python, "<3.7")
+
+requirements:
+  build:
+    - if: build_platform != target_platform
+      then: python
+    - if: build_platform != target_platform
+      then: cross-python_${{ target_platform }}
+    - if: build_platform != target_platform
+      then: python
+    - if: build_platform != target_platform
+      then: cross-python_${{ target_platform }}
+    - if: build_platform != target_platform
+      then: crossenv
+    - if: build_platform != target_platform
+      then: maturin >=1,<2
+    - if: not win
+      then: ${{ compiler('c') }}
+    - if: not win
+      then: ${{ stdlib("c") }}
+    - ${{ compiler('rust') }}
+    - if: win
+      then: posix
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - toml
+    - maturin >=1,<2
+  run:
+    - python
+
+tests:
+  - python:
+      imports:
+        - xorjson
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - mypy
+    script:
+      - mypy -m xorjson
+
+about:
+  license: Apache-2.0
+  license_file:
+    - LICENSE-APACHE
+    - LICENSE-MIT
+    - THIRDPARTY.yml
+  summary: xorjson, a fork of orjson, is a fast, correct JSON library for Python.
+  homepage: https://github.com/timkpaine/xorjson
+  repository: https://github.com/timkpaine/xorjson
+  documentation: https://github.com/timkpaine/xorjson
+
+extra:
+  recipe-maintainers:
+    - timkpaine
